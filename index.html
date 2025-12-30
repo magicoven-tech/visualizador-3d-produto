@@ -1,57 +1,101 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personalizador - Catálogo</title>
     <style>
-        body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; background-color: #f0f0f0; }
-        
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
         /* Painel Esquerdo */
         #controls {
-            position: absolute; top: 20px; left: 20px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
             background: rgba(255, 255, 255, 0.95);
-            padding: 20px; border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            width: 240px; z-index: 10;
-            max-height: 90vh; overflow-y: auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 240px;
+            z-index: 10;
+            max-height: 90vh;
+            overflow-y: auto;
         }
-        
+
         /* Painel Direito */
         #position-controls {
-            position: absolute; top: 20px; right: 20px;
+            position: absolute;
+            top: 20px;
+            right: 20px;
             background: rgba(255, 255, 255, 0.9);
-            padding: 15px; border-radius: 8px;
-            font-size: 12px; width: 220px; /* Um pouco mais largo para os números */
-            max-height: 90vh; overflow-y: auto;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            width: 220px;
+            /* Um pouco mais largo para os números */
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         /* Estilos Inputs */
-        input[type="text"], select { 
-            width: 100%; padding: 8px; margin-top: 5px; 
-            box-sizing: border-box; margin-bottom: 15px; 
-            border: 1px solid #ccc; border-radius: 4px;
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
-        
-        .slider-group { margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
-        label { display: block; font-weight: bold; margin-bottom: 4px; color: #333; }
-        input[type="range"] { width: 100%; cursor: pointer; }
-        
+
+        .slider-group {
+            margin-bottom: 12px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #333;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+        }
+
         /* Loading */
         #loading {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 20px; font-weight: bold; background: white; padding: 20px; border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            font-weight: bold;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
+
 <body>
 
     <div id="controls">
         <h3>Escolha o produto</h3>
         <label>Modelo:</label>
         <select id="productSelector">
-            </select>
+        </select>
 
         <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;">
 
@@ -63,7 +107,7 @@
     <div id="position-controls">
         <h3>Ajuste fino</h3>
         <p style="color: #666; margin-bottom: 10px;">Posicione o texto no objeto</p>
-        
+
         <div class="slider-group">
             <label>Esquerda / Direita (X)</label>
             <input type="range" id="posX" min="-50" max="50" step="0.01" value="-35">
@@ -80,7 +124,7 @@
             <label>Tamanho do texto</label>
             <input type="range" id="fontSize" min="0.1" max="10" step="0.1" value="3">
         </div>
-        
+
         <div class="slider-group">
             <label>Rotação X (tombar)</label>
             <input type="range" id="rotX" min="-3.2" max="3.2" step="0.01" value="0">
@@ -118,7 +162,7 @@
             { nome: "Suporte de celular", arquivo: "phone.glb" },
             { nome: "Porta guardanapos", arquivo: "guardanapo.glb" },
             { nome: "Mosquetão", arquivo: "mosquetao.glb" },
-            { nome: "Isqueiro lunar", arquivo: "isquerio_lunar.glb" }
+            { nome: "Isqueiro lunar", arquivo: "isqueiro_lunar.glb" }
         ];
 
         // 1. CENA
@@ -126,7 +170,7 @@
         scene.background = new THREE.Color(0xf0f0f0);
 
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
-        
+
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
@@ -134,7 +178,7 @@
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
         scene.add(ambientLight);
-        
+
         const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
         dirLight.position.set(5, 10, 7);
         dirLight.castShadow = true;
@@ -163,14 +207,14 @@
                 currentModel.traverse((child) => {
                     if (child.isMesh) {
                         child.geometry.dispose();
-                        if(child.material) child.material.dispose();
+                        if (child.material) child.material.dispose();
                     }
                 });
             }
 
             gltfLoader.load(fileName, (gltf) => {
                 currentModel = gltf.scene;
-                
+
                 const supportMaterial = new THREE.MeshStandardMaterial({ color: 0xffaa00, roughness: 0.5 });
                 currentModel.traverse((child) => {
                     if (child.isMesh) {
@@ -196,18 +240,22 @@
                 camera.lookAt(0, 0, 0);
                 controls.target.set(0, 0, 0);
                 controls.update();
-                
+
                 loadingDiv.style.display = 'none';
 
             }, undefined, (error) => {
                 console.error(error);
-                loadingDiv.innerText = "Erro: Arquivo '" + fileName + "' não encontrado.";
+                let message = "Erro: Arquivo '" + fileName + "' não encontrado.";
+                if (window.location.protocol === 'file:') {
+                    message += " (Acesso negado: Use um servidor local para carregar arquivos .glb)";
+                }
+                loadingDiv.innerText = message;
             });
         }
 
         // 3. POPULAR O MENU E INICIAR
         const selector = document.getElementById('productSelector');
-        
+
         catalogo.forEach((produto) => {
             const option = document.createElement('option');
             option.value = produto.arquivo;
@@ -247,11 +295,11 @@
 
             const textMaterial = new THREE.MeshStandardMaterial({ color: 0xcc5500, roughness: 0.6 });
             textMesh = new THREE.Mesh(geometry, textMaterial);
-            
+
             const x = parseFloat(document.getElementById('posX').value);
             const y = parseFloat(document.getElementById('posY').value);
             const z = parseFloat(document.getElementById('posZ').value);
-            
+
             const rx = parseFloat(document.getElementById('rotX').value);
             const ry = parseFloat(document.getElementById('rotY').value);
             const rz = parseFloat(document.getElementById('rotZ').value);
@@ -259,7 +307,7 @@
             textMesh.position.set(x, y, z);
             textMesh.rotation.set(rx, ry, rz);
             textMesh.castShadow = true;
-            
+
             scene.add(textMesh);
         }
 
@@ -281,4 +329,5 @@
         animate();
     </script>
 </body>
+
 </html>

@@ -1,0 +1,14 @@
+{
+    "name": "visualizador-3d-produto",
+    "version": "1.0.0",
+    "description": "3D Product Viewer with Three.js",
+    "scripts": {
+        "start": "npx -y serve . -l 3000"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "serve": "^14.2.1"
+    }
+}
