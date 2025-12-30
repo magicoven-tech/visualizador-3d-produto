@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personalizador 3D - Rotação Total</title>
+    <title>Personalizador - Catálogo</title>
     <style>
         body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; background-color: #f0f0f0; }
         
@@ -17,95 +17,85 @@
             max-height: 90vh; overflow-y: auto;
         }
         
-        /* Painel Direito (Ajustes) */
+        /* Painel Direito */
         #position-controls {
             position: absolute; top: 20px; right: 20px;
             background: rgba(255, 255, 255, 0.9);
             padding: 15px; border-radius: 8px;
-            font-size: 12px; width: 200px;
-            max-height: 90vh; overflow-y: auto; /* Caso tenha muitos sliders */
+            font-size: 12px; width: 220px; /* Um pouco mais largo para os números */
+            max-height: 90vh; overflow-y: auto;
         }
 
-        input[type="text"] { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; margin-bottom: 15px; }
-        .slider-group { margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        label { display: block; font-weight: bold; margin-bottom: 2px; }
-        input[type="range"] { width: 100%; }
+        /* Estilos Inputs */
+        input[type="text"], select { 
+            width: 100%; padding: 8px; margin-top: 5px; 
+            box-sizing: border-box; margin-bottom: 15px; 
+            border: 1px solid #ccc; border-radius: 4px;
+        }
         
-        input[type="file"] { font-size: 12px; margin-bottom: 10px; width: 100%; }
-
-        .history-item {
-            display: block; width: 100%; padding: 8px;
-            margin-top: 5px; background: #e0e0e0; border: none;
-            border-radius: 4px; cursor: pointer; text-align: left;
-            font-size: 13px; transition: 0.2s;
-        }
-        .history-item:hover { background: #d0d0d0; }
-        .history-title {
-            font-size: 12px; color: #666; margin-top: 15px; border-top: 1px solid #ccc; padding-top: 10px;
-        }
-
+        .slider-group { margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        label { display: block; font-weight: bold; margin-bottom: 4px; color: #333; }
+        input[type="range"] { width: 100%; cursor: pointer; }
+        
+        /* Loading */
         #loading {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             font-size: 20px; font-weight: bold; background: white; padding: 20px; border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
         }
     </style>
 </head>
 <body>
 
     <div id="controls">
+        <h3>Escolha o produto</h3>
+        <label>Modelo:</label>
+        <select id="productSelector">
+            </select>
+
+        <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;">
+
         <h3>Personalize</h3>
         <label>Seu nome:</label>
-        <input type="text" id="nameInput" placeholder="Digite..." value="SEU NOME" maxlength="15">
-
-        <hr style="border: 0; border-top: 1px solid #ddd; margin: 10px 0;">
-
-        <h3>Importar Arquivo</h3>
-        <label style="font-size: 12px; font-weight: normal; margin-bottom: 5px;">Selecione seu arquivo .glb:</label>
-        <input type="file" id="fileInput" accept=".glb">
-
-        <div id="historyContainer">
-            <div class="history-title">Histórico de arquivos:</div>
-            <button class="history-item" onclick="loadDefault()">Original (Padrão)</button>
-            <div id="userHistoryList"></div>
-        </div>
+        <input type="text" id="nameInput" placeholder="Digite..." value="Seu nome" maxlength="15">
     </div>
 
     <div id="position-controls">
-        <h3>Ajuste a posição</h3>
-        <p style="color: #666; margin-bottom: 10px;">Posição e Rotação do Texto</p>
+        <h3>Ajuste fino</h3>
+        <p style="color: #666; margin-bottom: 10px;">Posicione o texto no objeto</p>
         
         <div class="slider-group">
             <label>Esquerda / Direita (X)</label>
-            <input type="range" id="posX" min="-50" max="50" step="0.1" value="-35">
+            <input type="range" id="posX" min="-50" max="50" step="0.01" value="-35">
         </div>
         <div class="slider-group">
             <label>Cima / Baixo (Y)</label>
-            <input type="range" id="posY" min="-50" max="50" step="0.1" value="-2">
+            <input type="range" id="posY" min="-50" max="50" step="0.01" value="-2">
         </div>
         <div class="slider-group">
             <label>Frente / Trás (Z)</label>
-            <input type="range" id="posZ" min="-50" max="50" step="0.1" value="-0.3">
+            <input type="range" id="posZ" min="-50" max="50" step="0.01" value="-0.3">
         </div>
         <div class="slider-group">
             <label>Tamanho do texto</label>
-            <input type="range" id="fontSize" min="0.5" max="10" step="0.1" value="3">
+            <input type="range" id="fontSize" min="0.1" max="10" step="0.1" value="3">
         </div>
         
         <div class="slider-group">
-            <label>Rotação X (Tombar)</label>
-            <input type="range" id="rotX" min="-3.2" max="3.2" step="0.1" value="0">
+            <label>Rotação X (tombar)</label>
+            <input type="range" id="rotX" min="-3.2" max="3.2" step="0.01" value="0">
         </div>
         <div class="slider-group">
-            <label>Rotação Y (Girar)</label>
-            <input type="range" id="rotY" min="-3.2" max="3.2" step="0.1" value="0">
+            <label>Rotação Y (girar)</label>
+            <input type="range" id="rotY" min="-3.2" max="3.2" step="0.01" value="0">
         </div>
         <div class="slider-group">
-            <label>Rotação Z (Inclinar)</label>
-            <input type="range" id="rotZ" min="-3.2" max="3.2" step="0.1" value="0">
+            <label>Rotação Z (inclinar)</label>
+            <input type="range" id="rotZ" min="-3.2" max="3.2" step="0.01" value="0">
         </div>
     </div>
 
-    <div id="loading">Carregando Modelo...</div>
+    <div id="loading">Carregando catálogo...</div>
 
     <script type="importmap">
         {
@@ -122,6 +112,14 @@
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
         import { FontLoader } from 'three/addons/loaders/FontLoader.js';
         import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+
+        // --- CONFIGURAÇÃO DO CATÁLOGO ---
+        const catalogo = [
+            { nome: "Suporte de celular", arquivo: "phone.glb" },
+            { nome: "Porta guardanapos", arquivo: "guardanapo.glb" },
+            { nome: "Mosquetão", arquivo: "mosquetao.glb" },
+            { nome: "Isqueiro lunar", arquivo: "isquerio_lunar.glb" }
+        ];
 
         // 1. CENA
         const scene = new THREE.Scene();
@@ -152,24 +150,25 @@
         let textMesh = null;
         let currentModel = null;
 
-        // 2. LOADERS
+        // 2. FUNÇÃO DE CARREGAMENTO
         const gltfLoader = new GLTFLoader();
         const loadingDiv = document.getElementById('loading');
 
-        window.loadModel = function(url, isUpload = false) {
+        function loadModel(fileName) {
             loadingDiv.style.display = 'block';
+            loadingDiv.innerText = "Carregando " + fileName + "...";
 
-            gltfLoader.load(url, (gltf) => {
-                if (currentModel) {
-                    productGroup.remove(currentModel);
-                    currentModel.traverse((child) => {
-                        if (child.isMesh) {
-                            child.geometry.dispose();
-                            if(child.material) child.material.dispose();
-                        }
-                    });
-                }
+            if (currentModel) {
+                productGroup.remove(currentModel);
+                currentModel.traverse((child) => {
+                    if (child.isMesh) {
+                        child.geometry.dispose();
+                        if(child.material) child.material.dispose();
+                    }
+                });
+            }
 
+            gltfLoader.load(fileName, (gltf) => {
                 currentModel = gltf.scene;
                 
                 const supportMaterial = new THREE.MeshStandardMaterial({ color: 0xffaa00, roughness: 0.5 });
@@ -200,39 +199,31 @@
                 
                 loadingDiv.style.display = 'none';
 
-            }, undefined, (error) => { 
-                console.error(error); 
-                loadingDiv.innerText = "Erro ao carregar arquivo.";
+            }, undefined, (error) => {
+                console.error(error);
+                loadingDiv.innerText = "Erro: Arquivo '" + fileName + "' não encontrado.";
             });
         }
 
-        loadModel('modelo.glb');
-
-        window.loadDefault = function() {
-            loadModel('modelo.glb');
-        }
-
-        const fileInput = document.getElementById('fileInput');
-        const historyList = document.getElementById('userHistoryList');
-
-        fileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const objectURL = URL.createObjectURL(file);
-                loadModel(objectURL, true);
-                addToHistoryUI(file.name, objectURL);
-            }
+        // 3. POPULAR O MENU E INICIAR
+        const selector = document.getElementById('productSelector');
+        
+        catalogo.forEach((produto) => {
+            const option = document.createElement('option');
+            option.value = produto.arquivo;
+            option.innerText = produto.nome;
+            selector.appendChild(option);
         });
 
-        function addToHistoryUI(name, url) {
-            const btn = document.createElement('button');
-            btn.className = 'history-item';
-            btn.innerText = name;
-            btn.onclick = () => loadModel(url, true);
-            historyList.prepend(btn);
+        if (catalogo.length > 0) {
+            loadModel(catalogo[0].arquivo);
         }
 
-        // 3. TEXTO COM ROTAÇÃO 3 EIXOS
+        selector.addEventListener('change', (event) => {
+            loadModel(event.target.value);
+        });
+
+        // 4. TEXTO 3D
         const fontLoader = new FontLoader();
         fontLoader.load('https://unpkg.com/three@0.160.0/examples/fonts/helvetiker_bold.typeface.json', (font) => {
             loadedFont = font;
@@ -261,22 +252,18 @@
             const y = parseFloat(document.getElementById('posY').value);
             const z = parseFloat(document.getElementById('posZ').value);
             
-            // Novos eixos de rotação
             const rx = parseFloat(document.getElementById('rotX').value);
             const ry = parseFloat(document.getElementById('rotY').value);
             const rz = parseFloat(document.getElementById('rotZ').value);
 
             textMesh.position.set(x, y, z);
-            // Aplicar todas as rotações
             textMesh.rotation.set(rx, ry, rz);
-            
             textMesh.castShadow = true;
             
             scene.add(textMesh);
         }
 
         document.getElementById('nameInput').addEventListener('input', refreshText);
-        // Lista atualizada de todos os listeners
         ['posX', 'posY', 'posZ', 'fontSize', 'rotX', 'rotY', 'rotZ'].forEach(id => {
             document.getElementById(id).addEventListener('input', refreshText);
         });
