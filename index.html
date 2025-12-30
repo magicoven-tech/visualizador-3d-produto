@@ -22,7 +22,7 @@
             position: absolute; top: 20px; right: 20px;
             background: rgba(255, 255, 255, 0.9);
             padding: 15px; border-radius: 8px;
-            font-size: 12px; width: 200px;
+            font-size: 12px; width: 220px; /* Um pouco mais largo para os números */
             max-height: 90vh; overflow-y: auto;
         }
 
@@ -33,10 +33,11 @@
             border: 1px solid #ccc; border-radius: 4px;
         }
         
-        .slider-group { margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        label { display: block; font-weight: bold; margin-bottom: 2px; }
+        .slider-group { margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        label { display: block; font-weight: bold; margin-bottom: 4px; color: #333; }
         input[type="range"] { width: 100%; cursor: pointer; }
         
+        /* Loading */
         #loading {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             font-size: 20px; font-weight: bold; background: white; padding: 20px; border-radius: 10px;
@@ -47,54 +48,54 @@
 <body>
 
     <div id="controls">
-        <h3>1. Escolha o Produto</h3>
+        <h3>Escolha o produto</h3>
         <label>Modelo:</label>
         <select id="productSelector">
             </select>
 
         <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;">
 
-        <h3>2. Personalize</h3>
+        <h3>Personalize</h3>
         <label>Seu nome:</label>
-        <input type="text" id="nameInput" placeholder="Digite..." value="SEU NOME" maxlength="15">
+        <input type="text" id="nameInput" placeholder="Digite..." value="Seu nome" maxlength="15">
     </div>
 
     <div id="position-controls">
-        <h3>Ajuste Fino</h3>
+        <h3>Ajuste fino</h3>
         <p style="color: #666; margin-bottom: 10px;">Posicione o texto no objeto</p>
         
         <div class="slider-group">
             <label>Esquerda / Direita (X)</label>
-            <input type="range" id="posX" min="-50" max="50" step="0.1" value="-35">
+            <input type="range" id="posX" min="-50" max="50" step="0.01" value="-35">
         </div>
         <div class="slider-group">
             <label>Cima / Baixo (Y)</label>
-            <input type="range" id="posY" min="-50" max="50" step="0.1" value="-2">
+            <input type="range" id="posY" min="-50" max="50" step="0.01" value="-2">
         </div>
         <div class="slider-group">
             <label>Frente / Trás (Z)</label>
-            <input type="range" id="posZ" min="-50" max="50" step="0.1" value="-0.3">
+            <input type="range" id="posZ" min="-50" max="50" step="0.01" value="-0.3">
         </div>
         <div class="slider-group">
             <label>Tamanho do texto</label>
-            <input type="range" id="fontSize" min="0.5" max="10" step="0.1" value="3">
+            <input type="range" id="fontSize" min="0.1" max="10" step="0.1" value="3">
         </div>
         
         <div class="slider-group">
-            <label>Rotação X (Tombar)</label>
-            <input type="range" id="rotX" min="-3.2" max="3.2" step="0.1" value="0">
+            <label>Rotação X (tombar)</label>
+            <input type="range" id="rotX" min="-3.2" max="3.2" step="0.01" value="0">
         </div>
         <div class="slider-group">
-            <label>Rotação Y (Girar)</label>
-            <input type="range" id="rotY" min="-3.2" max="3.2" step="0.1" value="0">
+            <label>Rotação Y (girar)</label>
+            <input type="range" id="rotY" min="-3.2" max="3.2" step="0.01" value="0">
         </div>
         <div class="slider-group">
-            <label>Rotação Z (Inclinar)</label>
-            <input type="range" id="rotZ" min="-3.2" max="3.2" step="0.1" value="0">
+            <label>Rotação Z (inclinar)</label>
+            <input type="range" id="rotZ" min="-3.2" max="3.2" step="0.01" value="0">
         </div>
     </div>
 
-    <div id="loading">Carregando Catálogo...</div>
+    <div id="loading">Carregando catálogo...</div>
 
     <script type="importmap">
         {
@@ -113,13 +114,11 @@
         import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
         // --- CONFIGURAÇÃO DO CATÁLOGO ---
-        // Atualizei a lista conforme pediste. 
-        // Verifica se o arquivo do isqueiro se chama mesmo "isquerio" ou "isqueiro" na tua pasta.
         const catalogo = [
-            { nome: "Suporte de Celular", arquivo: "phone.glb" },
-            { nome: "Porta Guardanapos", arquivo: "guardanapo.glb" },
+            { nome: "Suporte de celular", arquivo: "phone.glb" },
+            { nome: "Porta guardanapos", arquivo: "guardanapo.glb" },
             { nome: "Mosquetão", arquivo: "mosquetao.glb" },
-            { nome: "Isqueiro Lunar", arquivo: "isquerio_lunar.glb" }
+            { nome: "Isqueiro lunar", arquivo: "isquerio_lunar.glb" }
         ];
 
         // 1. CENA
