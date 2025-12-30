@@ -3,30 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personalizador 3D</title>
+    <title>Personalizador 3D - Rotação Total</title>
     <style>
         body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; background-color: #f0f0f0; }
         
+        /* Painel Esquerdo */
         #controls {
             position: absolute; top: 20px; left: 20px;
             background: rgba(255, 255, 255, 0.95);
             padding: 20px; border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            width: 220px; z-index: 10;
+            width: 240px; z-index: 10;
+            max-height: 90vh; overflow-y: auto;
         }
         
+        /* Painel Direito (Ajustes) */
         #position-controls {
             position: absolute; top: 20px; right: 20px;
             background: rgba(255, 255, 255, 0.9);
             padding: 15px; border-radius: 8px;
             font-size: 12px; width: 200px;
+            max-height: 90vh; overflow-y: auto; /* Caso tenha muitos sliders */
         }
 
-        input[type="text"] { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
-        .slider-group { margin-bottom: 10px; }
+        input[type="text"] { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; margin-bottom: 15px; }
+        .slider-group { margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
         label { display: block; font-weight: bold; margin-bottom: 2px; }
         input[type="range"] { width: 100%; }
         
+        input[type="file"] { font-size: 12px; margin-bottom: 10px; width: 100%; }
+
+        .history-item {
+            display: block; width: 100%; padding: 8px;
+            margin-top: 5px; background: #e0e0e0; border: none;
+            border-radius: 4px; cursor: pointer; text-align: left;
+            font-size: 13px; transition: 0.2s;
+        }
+        .history-item:hover { background: #d0d0d0; }
+        .history-title {
+            font-size: 12px; color: #666; margin-top: 15px; border-top: 1px solid #ccc; padding-top: 10px;
+        }
+
         #loading {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             font-size: 20px; font-weight: bold; background: white; padding: 20px; border-radius: 10px;
@@ -39,11 +56,23 @@
         <h3>Personalize</h3>
         <label>Seu nome:</label>
         <input type="text" id="nameInput" placeholder="Digite..." value="SEU NOME" maxlength="15">
+
+        <hr style="border: 0; border-top: 1px solid #ddd; margin: 10px 0;">
+
+        <h3>Importar Arquivo</h3>
+        <label style="font-size: 12px; font-weight: normal; margin-bottom: 5px;">Selecione seu arquivo .glb:</label>
+        <input type="file" id="fileInput" accept=".glb">
+
+        <div id="historyContainer">
+            <div class="history-title">Histórico de arquivos:</div>
+            <button class="history-item" onclick="loadDefault()">Original (Padrão)</button>
+            <div id="userHistoryList"></div>
+        </div>
     </div>
 
     <div id="position-controls">
         <h3>Ajuste a posição</h3>
-        <p style="color: #666; margin-bottom: 10px;">Defina a posição padrão aqui.</p>
+        <p style="color: #666; margin-bottom: 10px;">Posição e Rotação do Texto</p>
         
         <div class="slider-group">
             <label>Esquerda / Direita (X)</label>
@@ -61,9 +90,18 @@
             <label>Tamanho do texto</label>
             <input type="range" id="fontSize" min="0.5" max="10" step="0.1" value="3">
         </div>
+        
         <div class="slider-group">
-            <label>Rotação</label>
+            <label>Rotação X (Tombar)</label>
+            <input type="range" id="rotX" min="-3.2" max="3.2" step="0.1" value="0">
+        </div>
+        <div class="slider-group">
+            <label>Rotação Y (Girar)</label>
             <input type="range" id="rotY" min="-3.2" max="3.2" step="0.1" value="0">
+        </div>
+        <div class="slider-group">
+            <label>Rotação Z (Inclinar)</label>
+            <input type="range" id="rotZ" min="-3.2" max="3.2" step="0.1" value="0">
         </div>
     </div>
 
@@ -112,58 +150,94 @@
 
         let loadedFont = null;
         let textMesh = null;
+        let currentModel = null;
 
-        // 2. CARREGAR MODELO
+        // 2. LOADERS
         const gltfLoader = new GLTFLoader();
-        
-        gltfLoader.load('modelo.glb', (gltf) => {
-            const model = gltf.scene;
-            const supportMaterial = new THREE.MeshStandardMaterial({ color: 0xffaa00, roughness: 0.5 });
+        const loadingDiv = document.getElementById('loading');
 
-            model.traverse((child) => {
-                if (child.isMesh) {
-                    child.material = supportMaterial;
-                    child.castShadow = true;
-                    child.receiveShadow = true;
+        window.loadModel = function(url, isUpload = false) {
+            loadingDiv.style.display = 'block';
+
+            gltfLoader.load(url, (gltf) => {
+                if (currentModel) {
+                    productGroup.remove(currentModel);
+                    currentModel.traverse((child) => {
+                        if (child.isMesh) {
+                            child.geometry.dispose();
+                            if(child.material) child.material.dispose();
+                        }
+                    });
                 }
+
+                currentModel = gltf.scene;
+                
+                const supportMaterial = new THREE.MeshStandardMaterial({ color: 0xffaa00, roughness: 0.5 });
+                currentModel.traverse((child) => {
+                    if (child.isMesh) {
+                        child.material = supportMaterial;
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+
+                const box = new THREE.Box3().setFromObject(currentModel);
+                const sizeVector = new THREE.Vector3();
+                box.getSize(sizeVector);
+                const length = sizeVector.length();
+                const center = box.getCenter(new THREE.Vector3());
+
+                currentModel.position.x += (currentModel.position.x - center.x);
+                currentModel.position.y += (currentModel.position.y - center.y);
+                currentModel.position.z += (currentModel.position.z - center.z);
+
+                productGroup.add(currentModel);
+
+                camera.position.set(0, length * 0.5, length * 1.0);
+                camera.lookAt(0, 0, 0);
+                controls.target.set(0, 0, 0);
+                controls.update();
+                
+                loadingDiv.style.display = 'none';
+
+            }, undefined, (error) => { 
+                console.error(error); 
+                loadingDiv.innerText = "Erro ao carregar arquivo.";
             });
+        }
 
-            // Zoom automático
-            const box = new THREE.Box3().setFromObject(model);
-            const sizeVector = new THREE.Vector3();
-            box.getSize(sizeVector);
-            const length = sizeVector.length();
-            const center = box.getCenter(new THREE.Vector3());
+        loadModel('modelo.glb');
 
-            model.position.x += (model.position.x - center.x);
-            model.position.y += (model.position.y - center.y);
-            model.position.z += (model.position.z - center.z);
+        window.loadDefault = function() {
+            loadModel('modelo.glb');
+        }
 
-            productGroup.add(model);
+        const fileInput = document.getElementById('fileInput');
+        const historyList = document.getElementById('userHistoryList');
 
-            // Ajuste do Zoom Inicial (1.0x)
-            camera.position.set(0, length * 0.5, length * 1.0);
-            camera.lookAt(0, 0, 0);
-            
-            controls.target.set(0, 0, 0);
-            controls.update();
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const objectURL = URL.createObjectURL(file);
+                loadModel(objectURL, true);
+                addToHistoryUI(file.name, objectURL);
+            }
+        });
 
-            checkLoad();
-        }, undefined, (error) => { console.error(error); });
+        function addToHistoryUI(name, url) {
+            const btn = document.createElement('button');
+            btn.className = 'history-item';
+            btn.innerText = name;
+            btn.onclick = () => loadModel(url, true);
+            historyList.prepend(btn);
+        }
 
-        // 3. TEXTO
+        // 3. TEXTO COM ROTAÇÃO 3 EIXOS
         const fontLoader = new FontLoader();
         fontLoader.load('https://unpkg.com/three@0.160.0/examples/fonts/helvetiker_bold.typeface.json', (font) => {
             loadedFont = font;
-            checkLoad();
             refreshText();
         });
-
-        function checkLoad() {
-            if(productGroup.children.length > 0 && loadedFont) {
-                document.getElementById('loading').style.display = 'none';
-            }
-        }
 
         function refreshText() {
             if (!loadedFont) return;
@@ -183,21 +257,27 @@
             const textMaterial = new THREE.MeshStandardMaterial({ color: 0xcc5500, roughness: 0.6 });
             textMesh = new THREE.Mesh(geometry, textMaterial);
             
-            // Pega os valores atualizados dos sliders
             const x = parseFloat(document.getElementById('posX').value);
             const y = parseFloat(document.getElementById('posY').value);
             const z = parseFloat(document.getElementById('posZ').value);
+            
+            // Novos eixos de rotação
+            const rx = parseFloat(document.getElementById('rotX').value);
             const ry = parseFloat(document.getElementById('rotY').value);
+            const rz = parseFloat(document.getElementById('rotZ').value);
 
             textMesh.position.set(x, y, z);
-            textMesh.rotation.y = ry;
+            // Aplicar todas as rotações
+            textMesh.rotation.set(rx, ry, rz);
+            
             textMesh.castShadow = true;
             
             scene.add(textMesh);
         }
 
         document.getElementById('nameInput').addEventListener('input', refreshText);
-        ['posX', 'posY', 'posZ', 'fontSize', 'rotY'].forEach(id => {
+        // Lista atualizada de todos os listeners
+        ['posX', 'posY', 'posZ', 'fontSize', 'rotX', 'rotY', 'rotZ'].forEach(id => {
             document.getElementById(id).addEventListener('input', refreshText);
         });
 
