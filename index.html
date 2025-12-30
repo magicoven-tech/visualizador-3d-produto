@@ -3,27 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personalizador 3D - Ajuste Final</title>
+    <title>Personalizador 3D - Melhorias</title>
     <style>
         body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; background-color: #f0f0f0; }
         
-        /* Painel Esquerdo: Entrada de Nome */
         #controls {
             position: absolute; top: 20px; left: 20px;
             background: rgba(255, 255, 255, 0.95);
             padding: 20px; border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            width: 220px;
-            z-index: 10;
+            width: 220px; z-index: 10;
         }
         
-        /* Painel Direito: Ajuste de Posição */
         #position-controls {
             position: absolute; top: 20px; right: 20px;
             background: rgba(255, 255, 255, 0.9);
             padding: 15px; border-radius: 8px;
-            font-size: 12px;
-            width: 200px;
+            font-size: 12px; width: 200px;
         }
 
         input[type="text"] { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
@@ -47,19 +43,19 @@
 
     <div id="position-controls">
         <h3>2. Ajuste a Posição</h3>
-        <p style="color: #666; margin-bottom: 10px;">Use isto para encostar o texto no objeto.</p>
+        <p style="color: #666; margin-bottom: 10px;">Defina a posição padrão aqui.</p>
         
         <div class="slider-group">
             <label>Esquerda / Direita (X)</label>
-            <input type="range" id="posX" min="-50" max="50" step="0.1" value="0">
+            <input type="range" id="posX" min="-50" max="50" step="0.1" value="-35">
         </div>
         <div class="slider-group">
             <label>Cima / Baixo (Y)</label>
-            <input type="range" id="posY" min="-50" max="50" step="0.1" value="0">
+            <input type="range" id="posY" min="-50" max="50" step="0.1" value="-2">
         </div>
         <div class="slider-group">
             <label>Frente / Trás (Z)</label>
-            <input type="range" id="posZ" min="-50" max="50" step="0.1" value="2">
+            <input type="range" id="posZ" min="-50" max="50" step="0.1" value="-0.3">
         </div>
         <div class="slider-group">
             <label>Tamanho do Texto</label>
@@ -93,7 +89,6 @@
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0xf0f0f0);
 
-        // Configuração inicial da câmera
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
         
         const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -118,16 +113,12 @@
         let loadedFont = null;
         let textMesh = null;
 
-        // 2. CARREGAR MODELO COM ZOOM AUTOMÁTICO
+        // 2. CARREGAR MODELO
         const gltfLoader = new GLTFLoader();
         
         gltfLoader.load('modelo.glb', (gltf) => {
             const model = gltf.scene;
-
-            const supportMaterial = new THREE.MeshStandardMaterial({ 
-                color: 0xffaa00, 
-                roughness: 0.5 
-            });
+            const supportMaterial = new THREE.MeshStandardMaterial({ color: 0xffaa00, roughness: 0.5 });
 
             model.traverse((child) => {
                 if (child.isMesh) {
@@ -137,37 +128,30 @@
                 }
             });
 
-            // --- CÁLCULO DE TAMANHO E ZOOM ---
+            // Zoom automático
             const box = new THREE.Box3().setFromObject(model);
             const sizeVector = new THREE.Vector3();
             box.getSize(sizeVector);
-            const length = sizeVector.length(); // Tamanho diagonal do objeto
+            const length = sizeVector.length();
             const center = box.getCenter(new THREE.Vector3());
 
-            // Centraliza o modelo no mundo
             model.position.x += (model.position.x - center.x);
             model.position.y += (model.position.y - center.y);
             model.position.z += (model.position.z - center.z);
 
             productGroup.add(model);
 
-            // AQUI ESTÁ A MÁGICA DO ZOOM:
-            // Define a câmera para ficar longe o suficiente (2.5 vezes o tamanho do objeto)
-            // Se quiseres ainda menor, aumenta o 2.5 para 3.0 ou 4.0
+            // Ajuste do Zoom Inicial (1.0x)
             camera.position.set(0, length * 0.5, length * 1.0);
             camera.lookAt(0, 0, 0);
             
-            // Atualiza os controles para a nova posição da câmera
             controls.target.set(0, 0, 0);
             controls.update();
 
             checkLoad();
-        }, undefined, (error) => {
-            console.error(error);
-            document.getElementById('loading').innerText = "Erro ao carregar modelo.glb";
-        });
+        }, undefined, (error) => { console.error(error); });
 
-        // 3. RESTO DO CÓDIGO (IGUAL AO ANTERIOR)
+        // 3. TEXTO
         const fontLoader = new FontLoader();
         fontLoader.load('https://unpkg.com/three@0.160.0/examples/fonts/helvetiker_bold.typeface.json', (font) => {
             loadedFont = font;
@@ -192,22 +176,14 @@
             const size = parseFloat(document.getElementById('fontSize').value);
 
             const geometry = new TextGeometry(text, {
-                font: loadedFont,
-                size: size,
-                height: 0.4,
-                curveSegments: 12,
-                bevelEnabled: false
+                font: loadedFont, size: size, height: 0.4, curveSegments: 12, bevelEnabled: false
             });
-
             geometry.center();
 
-            const textMaterial = new THREE.MeshStandardMaterial({ 
-                color: 0xcc5500, 
-                roughness: 0.6
-            });
-
+            const textMaterial = new THREE.MeshStandardMaterial({ color: 0xcc5500, roughness: 0.6 });
             textMesh = new THREE.Mesh(geometry, textMaterial);
             
+            // Pega os valores atualizados dos sliders
             const x = parseFloat(document.getElementById('posX').value);
             const y = parseFloat(document.getElementById('posY').value);
             const z = parseFloat(document.getElementById('posZ').value);
@@ -230,13 +206,11 @@
             controls.update();
             renderer.render(scene, camera);
         }
-        
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
-
         animate();
     </script>
 </body>
