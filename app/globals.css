@@ -1,0 +1,290 @@
+@tailwind base;
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   DESIGN SYSTEM - INDUSTRIAL STONE THEME
+   Based on: design.dev CSS Variables Guide
+   ============================================ */
+
+@theme inline {
+    --radius-sm: 0px;
+    --radius-md: 0px;
+    --radius-lg: 0px;
+    --radius-xl: 0px;
+    --radius-2xl: 0px;
+    --radius-3xl: 0px;
+    --radius-4xl: 0px;
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+    /* =====================================
+       INDUSTRIAL STONE THEME
+       ===================================== */
+    
+    /* Sharp corners - 0px everywhere */
+    --radius: 0px;
+    
+    /* Stone color palette */
+    --background: 36 17% 93%; /* #f2eee9 - Stone claro */
+    --foreground: 0 0% 0%; /* #000000 - Preto tecnico */
+    
+    /* Accent - Neon Green */
+    --accent: 121 100% 58%; /* #27FF2B - Verde Neon */
+    --accent-foreground: 0 0% 0%;
+    
+    /* UI Colors */
+    --card: 36 17% 93%;
+    --card-foreground: 0 0% 0%;
+    --popover: 36 17% 93%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 0 0% 0%;
+    --primary-foreground: 36 17% 93%;
+    --secondary: 36 17% 85%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 36 17% 85%;
+    --muted-foreground: 0 0% 40%;
+    --destructive: 0 84% 60%;
+    --border: 36 17% 75%;
+    --input: 36 17% 75%;
+    --ring: 121 100% 58%;
+    
+    /* Chart colors */
+    --chart-1: 121 100% 58%;
+    --chart-2: 36 17% 65%;
+    --chart-3: 36 17% 45%;
+    --chart-4: 36 17% 25%;
+    --chart-5: 0 0% 0%;
+    
+    /* Sidebar */
+    --sidebar: 36 17% 90%;
+    --sidebar-foreground: 0 0% 0%;
+    --sidebar-primary: 0 0% 0%;
+    --sidebar-primary-foreground: 36 17% 93%;
+    --sidebar-accent: 121 100% 58%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 36 17% 75%;
+    --sidebar-ring: 121 100% 58%;
+    
+    /* Glass Effect Variables */
+    --glass-opacity: 0.7;
+    --glass-blur: 12px;
+    --glass-border: 1px;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --shadow-neon: 0 0 20px hsl(121 100% 58% / 0.3);
+}
+
+.dark {
+    --background: 0 0% 5%;
+    --foreground: 36 17% 93%;
+    --card: 0 0% 8%;
+    --card-foreground: 36 17% 93%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 36 17% 93%;
+    --primary: 36 17% 93%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 36 17% 93%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 36 17% 70%;
+    --accent: 121 100% 58%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 84% 60%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 121 100% 58%;
+    --sidebar: 0 0% 8%;
+    --sidebar-foreground: 36 17% 93%;
+    --sidebar-primary: 121 100% 58%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 36 17% 93%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 121 100% 58%;
+}
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+    
+    body {
+        @apply bg-background text-foreground;
+        font-family: var(--font-sans);
+        font-feature-settings: "rlig" 1, "calt" 1;
+    }
+    
+    /* Force sharp corners globally */
+    *,
+    *::before,
+    *::after {
+        border-radius: 0px !important;
+    }
+}
+
+@layer components {
+    /* Glassmorphism Panel */
+    .glass-panel {
+        background: hsl(var(--background) / var(--glass-opacity));
+        backdrop-filter: blur(var(--glass-blur));
+        -webkit-backdrop-filter: blur(var(--glass-blur));
+        border: var(--glass-border) solid hsl(var(--border) / 0.3);
+    }
+
+    /* Industrial Text Styles */
+    .industrial-text {
+        font-family: var(--font-mono);
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+    }
+
+    .industrial-heading {
+        font-family: var(--font-sans);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+    }
+
+    /* Technical Data Display */
+    .tech-data {
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        color: hsl(var(--foreground) / 0.7);
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* Neon Accent Elements */
+    .neon-accent {
+        color: hsl(var(--accent));
+        text-shadow: var(--shadow-neon);
+    }
+
+    .neon-border {
+        border-color: hsl(var(--accent));
+        box-shadow: 0 0 10px hsl(var(--accent) / 0.2);
+    }
+
+    /* 3D Canvas Container */
+    .canvas-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: hsl(var(--background));
+        overflow: hidden;
+    }
+
+    /* =================================================
+       BROKEN GRID SYSTEM - Editorial Layout Engine
+       ================================================= */
+    
+    /* Base Grid: Mobile = 1 coluna, Desktop = 12 colunas */
+    .editorial-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 3rem 1.5rem;
+        align-items: start;
+    }
+    
+    @media (min-width: 768px) {
+        .editorial-grid {
+            grid-template-columns: repeat(12, 1fr);
+            gap: 10rem 3rem;
+        }
+    }
+    
+    /* ===== COLUMN SPANS ===== */
+    .span-3 { grid-column: span 1; }
+    .span-4 { grid-column: span 1; }
+    .span-5 { grid-column: span 1; }
+    .span-6 { grid-column: span 1; }
+    
+    @media (min-width: 768px) {
+        .span-3 { grid-column: span 3; }
+        .span-4 { grid-column: span 4; }
+        .span-5 { grid-column: span 5; }
+        .span-6 { grid-column: span 6; }
+    }
+    
+    /* ===== COLUMN START POSITIONS ===== */
+    @media (min-width: 768px) {
+        .start-1 { grid-column-start: 1; }
+        .start-2 { grid-column-start: 2; }
+        .start-7 { grid-column-start: 7; }
+        .start-8 { grid-column-start: 8; }
+        .start-9 { grid-column-start: 9; }
+    }
+    
+    /* ===== VERTICAL OFFSETS (Editorial Stagger) ===== */
+    .offset-0 { margin-top: 0; }
+    .offset-sm { margin-top: 1.5rem; }
+    .offset-md { margin-top: 3rem; }
+    .offset-lg { margin-top: 5rem; }
+    
+    @media (min-width: 768px) {
+        .offset-0 { margin-top: 0; }
+        .offset-sm { margin-top: 6rem; }
+        .offset-md { margin-top: 16rem; }
+        .offset-lg { margin-top: 20rem; }
+        .offset-negative-sm { margin-top: -8rem; }
+        .offset-negative-md { margin-top: -10rem; }
+    }
+    
+    /* ===== ASPECT RATIOS ===== */
+    .aspect-portrait { aspect-ratio: 3 / 4; }
+    .aspect-square { aspect-ratio: 1 / 1; }
+    .aspect-tall { aspect-ratio: 4 / 5; }
+    .aspect-wide { aspect-ratio: 16 / 10; }
+    
+    /* Product card hover effect */
+    .product-card {
+        transition: transform 0.3s ease;
+    }
+    
+    .product-card:hover .product-image {
+        transform: scale(1.05);
+    }
+    
+    .product-image {
+        transition: transform 0.4s ease;
+    }
+}
